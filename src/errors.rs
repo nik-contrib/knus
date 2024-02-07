@@ -10,7 +10,7 @@ use thiserror::Error;
 use miette::{Diagnostic, NamedSource};
 
 use crate::ast::{TypeName, Literal, SpannedNode};
-use crate::span::{Spanned};
+use crate::span::Spanned;
 use crate::decode::Kind;
 use crate::traits::{ErrorSpan, Span};
 
@@ -117,14 +117,15 @@ pub enum DecodeError<S: ErrorSpan> {
     /// 1. Integer value out of range
     /// 2. `FromStr` returned error for the value parse by
     ///    `#[knuffel(.., str)]`
-    #[error("{}", error)]
+    #[error("an error occured during scalar conversion")]
     #[diagnostic()]
     Conversion {
         /// Position of the scalar that could not be converted
         #[label("invalid value")]
         span: S,
         /// Original error
-        error: Box<dyn std::error::Error + Send + Sync + 'static>,
+        #[diagnostic_source]
+        source: Box<dyn Diagnostic + Send + Sync + 'static>,
     },
     /// Unsupported value
     ///
@@ -145,7 +146,7 @@ pub enum DecodeError<S: ErrorSpan> {
     /// better to use [`DecodeError::Conversion`] as that will associate
     /// source code span to the error.
     #[error(transparent)]
-    Custom(Box<dyn std::error::Error + Send + Sync + 'static>),
+    Custom(Box<dyn Diagnostic + Send + Sync + 'static>),
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
@@ -389,13 +390,19 @@ impl<S: Span> chumsky::Error<char> for ParseError<S> {
 }
 
 impl<S: ErrorSpan> DecodeError<S> {
-    /// Construct [`DecodeError::Conversion`] error
+    /// Construct [`DecodeError::Conversion`] error from an std::error::Error
     pub fn conversion<T, E>(span: &Spanned<T, S>, err: E) -> Self
         where E: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
     {
+        Self::conversion_diagnostic(span, err.into())
+    }
+    /// Construct [`DecodeError::Conversion`] error from a Diagnostic
+    pub fn conversion_diagnostic<T, E>(span: &Spanned<T, S>, err: E) -> Self
+        where E: Into<Box<dyn Diagnostic + Send + Sync + 'static>>,
+    {
         DecodeError::Conversion {
             span: span.span().clone(),
-            error: err.into(),
+            source: err.into(),
         }
     }
     /// Construct [`DecodeError::ScalarKind`] error
@@ -450,8 +457,8 @@ impl<S: ErrorSpan> DecodeError<S> {
             => MissingNode { message },
             Unexpected { span, kind, message }
             => Unexpected { span: f(span), kind, message},
-            Conversion { span, error }
-            => Conversion { span: f(span), error },
+            Conversion { span, source }
+            => Conversion { span: f(span), source },
             Unsupported { span, message }
             => Unsupported { span: f(span), message },
             Custom(e) => Custom(e),

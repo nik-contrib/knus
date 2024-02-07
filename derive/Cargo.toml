@@ -23,4 +23,5 @@ proc-macro-error = "1.0.4"
 
 [dev-dependencies]
 knuffel = { path=".." }
-miette = { version="6.0.1", features=["fancy"] }
+# miette = { version="6.0.1", features=["fancy"] }
+miette = { path="/home/tll/Documents/Coding/Languages/Rust/miette", features=["fancy"] }
