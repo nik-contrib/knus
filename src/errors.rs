@@ -394,15 +394,16 @@ impl<S: ErrorSpan> DecodeError<S> {
     pub fn conversion<T, E>(span: &Spanned<T, S>, err: E) -> Self
         where E: Into<Box<dyn std::error::Error + Send + Sync + 'static>>,
     {
-        Self::conversion_diagnostic(span, err.into())
-    }
-    /// Construct [`DecodeError::Conversion`] error from a Diagnostic
-    pub fn conversion_diagnostic<T, E>(span: &Spanned<T, S>, err: E) -> Self
-        where E: Into<Box<dyn Diagnostic + Send + Sync + 'static>>,
-    {
         DecodeError::Conversion {
             span: span.span().clone(),
-            source: err.into(),
+            source: err.into().into(),
+        }
+    }
+    /// Construct [`DecodeError::Conversion`] error from a Diagnostic
+    pub fn conversion_diagnostic<T>(span: &Spanned<T, S>, err: Box<dyn Diagnostic + Send + Sync + 'static>) -> Self {
+        DecodeError::Conversion {
+            span: span.span().clone(),
+            source: err,
         }
     }
     /// Construct [`DecodeError::ScalarKind`] error
