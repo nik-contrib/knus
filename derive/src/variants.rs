@@ -42,6 +42,7 @@ pub fn emit_enum(e: &Enum) -> syn::Result<TokenStream> {
 
     let decode = decode(&common, &node)?;
     Ok(quote! {
+        #[automatically_derived]
         impl #impl_gen ::knuffel::Decode #trait_gen for #name #type_gen
             #bounds
         {

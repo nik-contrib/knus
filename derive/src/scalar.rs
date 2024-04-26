@@ -98,6 +98,7 @@ pub fn emit_enum(e: &Enum) -> syn::Result<TokenStream> {
             quote!(#name => Ok(#e_name::#ident))
         });
     Ok(quote! {
+        #[automatically_derived]
         impl<S: ::knuffel::traits::ErrorSpan> ::knuffel::DecodeScalar<S>
                 for #e_name {
             fn raw_decode(val: &::knuffel::span::Spanned<

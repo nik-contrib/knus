@@ -89,6 +89,7 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
         let insert_child = insert_child(&common, &node)?;
         let insert_property = insert_property(&common, &name, &value)?;
         extra_traits.push(quote! {
+            #[automatically_derived]
             impl #impl_gen ::knuffel::traits::DecodePartial #trait_gen
                 for #s_name #type_gen
                 #bounds
@@ -116,6 +117,7 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
     {
         let decode_children = decode_children(&common, &children, None)?;
         extra_traits.push(quote! {
+            #[automatically_derived]
             impl #impl_gen ::knuffel::traits::DecodeChildren #trait_gen
                 for #s_name #type_gen
                 #bounds
@@ -134,6 +136,7 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
     }
     Ok(quote! {
         #(#extra_traits)*
+        #[automatically_derived]
         impl #impl_gen ::knuffel::Decode #trait_gen for #s_name #type_gen
             #bounds
         {
@@ -158,6 +161,7 @@ pub fn emit_new_type(s: &NewType) -> syn::Result<TokenStream> {
     let node = syn::Ident::new("node", Span::mixed_site());
     let ctx = syn::Ident::new("ctx", Span::mixed_site());
     Ok(quote! {
+        #[automatically_derived]
         impl<S: ::knuffel::traits::ErrorSpan>
             ::knuffel::Decode<S> for #s_name
         {
