@@ -1004,7 +1004,7 @@ mod test {
             "labels": [],
             "related": [{
                 "message":
-                    "found `x`, expected `\"`, `/`, `\\`, `b`, `f`, `n`, `r`, `t` or `u`",
+                    "found `x`, expected `\"`, `\\`, `b`, `f`, `n`, `r`, `s`, `t` or `u`",
                 "severity": "error",
                 "filename": "<test>",
                 "labels": [
@@ -1033,7 +1033,7 @@ mod test {
                 "related": []
             }, {
                 "message":
-                    "found `!`, expected `\"`, `/`, `\\`, `b`, `f`, `n`, `r`, `t` or `u`",
+                    "found `!`, expected `\"`, `\\`, `b`, `f`, `n`, `r`, `s`, `t` or `u`",
                 "severity": "error",
                 "filename": "<test>",
                 "labels": [
@@ -1170,6 +1170,8 @@ mod test {
     fn exclude_keywords() {
         parse(nodes(), "item #true").unwrap();
 
+        // would be nice for this to error with "unexpected keyword #true", but
+        // right now its reading it as an improperly formatted raw string.
         err_eq!(
             parse(nodes(), "#true \"item\""),
             r#"{
@@ -1178,12 +1180,12 @@ mod test {
             "labels": [],
             "related": [{
                 "message":
-                    "found `#true`, expected identifier",
+                    "found `t`, expected `\"` or `#`",
                 "severity": "error",
                 "filename": "<test>",
                 "labels": [
-                    {"label": "keyword",
-                    "span": {"offset": 0, "length": 5}}
+                    {"label": "unexpected token",
+                    "span": {"offset": 1, "length": 1}}
                 ],
                 "related": []
             }]
