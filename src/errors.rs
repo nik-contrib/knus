@@ -1,6 +1,6 @@
-//! Error types for the knus library
+//! Error types for the ferrishot_knus library
 //!
-//! You only need [`Error`](enum@Error) exposed as `knus::Error` unless you
+//! You only need [`Error`](enum@Error) exposed as `ferrishot_knus::Error` unless you
 //! do manual implementations of any of the `Decode*` traits.
 use std::borrow::Cow;
 use std::collections::BTreeSet;
@@ -115,7 +115,7 @@ pub enum DecodeError<S: ErrorSpan> {
     /// converted to the Rust value. Including, but not limited to:
     /// 1. Integer value out of range
     /// 2. `FromStr` returned error for the value parse by
-    ///    `#[knus(.., str)]`
+    ///    `#[ferrishot_knus(.., str)]`
     #[error("{}", source)]
     #[diagnostic()]
     Conversion {
@@ -140,7 +140,7 @@ pub enum DecodeError<S: ErrorSpan> {
     },
     /// Custom error that can be emitted during decoding
     ///
-    /// This is not used by the knus itself. Note most of the time it's
+    /// This is not used by the ferrishot_knus itself. Note most of the time it's
     /// better to use [`DecodeError::Conversion`] as that will associate
     /// source code span to the error.
     #[error(transparent)]

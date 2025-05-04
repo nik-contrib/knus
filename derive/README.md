@@ -1,9 +1,9 @@
 This is derive implementation to make working with [KDL](https://kdl.dev) file
-format convenient that works with [knus] parser library.
+format convenient that works with [ferrishot_knus] parser library.
 
-See more in the documentation of [knus] library itself.
+See more in the documentation of [ferrishot_knus] library itself.
 
-[knus]: https://docs.rs/knus
+[ferrishot_knus]: https://docs.rs/ferrishot_knus
 
 
 License

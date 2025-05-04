@@ -1,37 +1,37 @@
-use knus::ast::{BuiltinType, TypeName};
-use knus::span::Span;
-use knus::traits::Decode;
+use ferrishot_knus::ast::{BuiltinType, TypeName};
+use ferrishot_knus::span::Span;
+use ferrishot_knus::traits::Decode;
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Child;
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
-#[knus(span_type=Span)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
+#[ferrishot_knus(span_type=Span)]
 struct NodeSpan {
-    #[knus(span)]
+    #[ferrishot_knus(span)]
     span: Span,
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: String,
-    #[knus(children)]
+    #[ferrishot_knus(children)]
     children: Vec<Child>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct NodeType {
-    #[knus(type_name)]
+    #[ferrishot_knus(type_name)]
     type_name: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct NameAndType {
-    #[knus(node_name)]
+    #[ferrishot_knus(node_name)]
     node_name: String,
-    #[knus(type_name)]
+    #[ferrishot_knus(type_name)]
     type_name: Option<TypeName>,
 }
 
 fn parse<T: Decode<Span>>(text: &str) -> T {
-    let mut nodes: Vec<T> = knus::parse("<test>", text).unwrap();
+    let mut nodes: Vec<T> = ferrishot_knus::parse("<test>", text).unwrap();
     assert_eq!(nodes.len(), 1);
     nodes.remove(0)
 }

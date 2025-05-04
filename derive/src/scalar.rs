@@ -94,40 +94,40 @@ pub fn emit_enum(e: &Enum) -> syn::Result<TokenStream> {
         quote!(#name => Ok(#e_name::#ident))
     });
     Ok(quote! {
-        impl<S: ::knus::traits::ErrorSpan> ::knus::DecodeScalar<S>
+        impl<S: ::ferrishot_knus::traits::ErrorSpan> ::ferrishot_knus::DecodeScalar<S>
                 for #e_name {
-            fn raw_decode(val: &::knus::span::Spanned<
-                          ::knus::ast::Literal, S>,
-                          ctx: &mut ::knus::decode::Context<S>)
-                -> ::std::result::Result<#e_name, ::knus::errors::DecodeError<S>>
+            fn raw_decode(val: &::ferrishot_knus::span::Spanned<
+                          ::ferrishot_knus::ast::Literal, S>,
+                          ctx: &mut ::ferrishot_knus::decode::Context<S>)
+                -> ::std::result::Result<#e_name, ::ferrishot_knus::errors::DecodeError<S>>
             {
                 match &**val {
-                    ::knus::ast::Literal::String(ref s) => {
+                    ::ferrishot_knus::ast::Literal::String(ref s) => {
                         match &s[..] {
                             #(#match_branches,)*
                             _ => {
-                                Err(::knus::errors::DecodeError::conversion(
+                                Err(::ferrishot_knus::errors::DecodeError::conversion(
                                         val, #value_err))
                             }
                         }
                     }
                     _ => {
-                        Err(::knus::errors::DecodeError::scalar_kind(
-                            ::knus::decode::Kind::String,
+                        Err(::ferrishot_knus::errors::DecodeError::scalar_kind(
+                            ::ferrishot_knus::decode::Kind::String,
                             &val,
                         ))
                     }
                 }
             }
-            fn type_check(type_name: &Option<::knus::span::Spanned<
-                          ::knus::ast::TypeName, S>>,
-                          ctx: &mut ::knus::decode::Context<S>)
+            fn type_check(type_name: &Option<::ferrishot_knus::span::Spanned<
+                          ::ferrishot_knus::ast::TypeName, S>>,
+                          ctx: &mut ::ferrishot_knus::decode::Context<S>)
             {
                 if let Some(typ) = type_name {
-                    ctx.emit_error(::knus::errors::DecodeError::TypeName {
+                    ctx.emit_error(::ferrishot_knus::errors::DecodeError::TypeName {
                         span: typ.span().clone(),
                         found: Some((**typ).clone()),
-                        expected: ::knus::errors::ExpectedType::no_type(),
+                        expected: ::ferrishot_knus::errors::ExpectedType::no_type(),
                         rust_type: stringify!(#e_name),
                     });
                 }

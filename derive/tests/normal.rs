@@ -4,207 +4,207 @@ use std::fmt;
 
 use miette::Diagnostic;
 
-use knus::traits::DecodeChildren;
-use knus::{span::Span, Decode};
+use ferrishot_knus::traits::DecodeChildren;
+use ferrishot_knus::{span::Span, Decode};
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Arg1 {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Arg1RawIdent {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     r#type: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ArgDef {
-    #[knus(argument, default)]
+    #[ferrishot_knus(argument, default)]
     name: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ArgDefValue {
-    #[knus(argument, default="unnamed".into())]
+    #[ferrishot_knus(argument, default="unnamed".into())]
     name: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ArgDefOptValue {
-    #[knus(argument, default=Some("unnamed".into()))]
+    #[ferrishot_knus(argument, default=Some("unnamed".into()))]
     name: Option<String>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct OptArg {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: Option<String>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Extra {
     field: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct VarArg {
-    #[knus(arguments)]
+    #[ferrishot_knus(arguments)]
     params: Vec<u64>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq, Default)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq, Default)]
 struct Prop1 {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     label: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq, Default)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq, Default)]
 struct Prop1RawIdent {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     r#type: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct PropDef {
-    #[knus(property, default)]
+    #[ferrishot_knus(property, default)]
     label: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct PropDefValue {
-    #[knus(property, default="unknown".into())]
+    #[ferrishot_knus(property, default="unknown".into())]
     label: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct PropDefOptValue {
-    #[knus(property, default=Some("unknown".into()))]
+    #[ferrishot_knus(property, default=Some("unknown".into()))]
     label: Option<String>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct PropNamed {
-    #[knus(property(name = "x"))]
+    #[ferrishot_knus(property(name = "x"))]
     label: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct OptProp {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     label: Option<String>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct VarProp {
-    #[knus(properties)]
+    #[ferrishot_knus(properties)]
     scores: BTreeMap<String, u64>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Children {
-    #[knus(children)]
+    #[ferrishot_knus(children)]
     children: Vec<Arg1>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct FilteredChildren {
-    #[knus(children(name = "left"))]
+    #[ferrishot_knus(children(name = "left"))]
     left: Vec<OptArg>,
-    #[knus(children(name = "right"))]
+    #[ferrishot_knus(children(name = "right"))]
     right: Vec<OptArg>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 enum Variant {
     Arg1(Arg1),
     Prop1(Prop1),
-    #[knus(skip)]
+    #[ferrishot_knus(skip)]
     #[allow(dead_code)]
     Var3(u32),
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Child {
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     main: Prop1,
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     extra: Option<Prop1>,
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     flag: bool,
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     унікод: Option<Prop1>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ChildDef {
-    #[knus(child, default)]
+    #[ferrishot_knus(child, default)]
     main: Prop1,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ChildDefValue {
-    #[knus(child, default=Prop1 { label: String::from("prop1") })]
+    #[ferrishot_knus(child, default=Prop1 { label: String::from("prop1") })]
     main: Prop1,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Unwrap {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     label: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct UnwrapRawIdent {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     r#type: String,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct UnwrapFiltChildren {
-    #[knus(children(name = "labels"), unwrap(arguments))]
+    #[ferrishot_knus(children(name = "labels"), unwrap(arguments))]
     labels: Vec<Vec<String>>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct UnwrapChildren {
-    #[knus(children, unwrap(arguments))]
+    #[ferrishot_knus(children, unwrap(arguments))]
     labels: Vec<Vec<String>>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Parse {
-    #[knus(child, unwrap(argument, str))]
+    #[ferrishot_knus(child, unwrap(argument, str))]
     listen: std::net::SocketAddr,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct ParseOpt {
-    #[knus(property, str)]
+    #[ferrishot_knus(property, str)]
     listen: Option<std::net::SocketAddr>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct Bytes {
-    #[knus(child, unwrap(argument, bytes))]
+    #[ferrishot_knus(child, unwrap(argument, bytes))]
     data: Vec<u8>,
 }
 
-#[derive(knus_derive::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus_derive::Decode, Debug, PartialEq)]
 struct OptBytes {
-    #[knus(property, bytes)]
+    #[ferrishot_knus(property, bytes)]
     data: Option<Vec<u8>>,
 }
 
 fn parse<T: Decode<Span>>(text: &str) -> T {
-    let mut nodes: Vec<T> = knus::parse("<test>", text).unwrap();
+    let mut nodes: Vec<T> = ferrishot_knus::parse("<test>", text).unwrap();
     assert_eq!(nodes.len(), 1);
     nodes.remove(0)
 }
 
 fn parse_err<T: Decode<Span> + fmt::Debug>(text: &str) -> String {
-    let err = knus::parse::<Vec<T>>("<test>", text).unwrap_err();
+    let err = ferrishot_knus::parse::<Vec<T>>("<test>", text).unwrap_err();
     err.related()
         .unwrap()
         .map(|e| e.to_string())
@@ -213,11 +213,11 @@ fn parse_err<T: Decode<Span> + fmt::Debug>(text: &str) -> String {
 }
 
 fn parse_doc<T: DecodeChildren<Span>>(text: &str) -> T {
-    knus::parse("<test>", text).unwrap()
+    ferrishot_knus::parse("<test>", text).unwrap()
 }
 
 fn parse_doc_err<T: DecodeChildren<Span> + fmt::Debug>(text: &str) -> String {
-    let err = knus::parse::<T>("<test>", text).unwrap_err();
+    let err = ferrishot_knus::parse::<T>("<test>", text).unwrap_err();
     err.related()
         .unwrap()
         .map(|e| e.to_string())

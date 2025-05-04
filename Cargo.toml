@@ -5,7 +5,7 @@ members = [
 ]
 
 [package]
-name = "knus"
+name = "ferrishot_knus"
 version = "3.2.0"
 edition = "2021"
 description = """
@@ -14,14 +14,14 @@ description = """
 license = "MIT/Apache-2.0"
 keywords = ["kdl", "configuration", "parser"]
 categories = ["parser-implementations", "config", "encoding"]
-homepage = "https://github.com/TheLostLambda/knus"
-documentation = "https://docs.rs/knus"
+homepage = "https://github.com/TheLostLambda/ferrishot_knus"
+documentation = "https://docs.rs/ferrishot_knus"
 rust-version = "1.62.0"
 readme = "README.md"
 
 [dependencies]
 chumsky = { version="0.9.3", default-features=false }
-knus-derive = { path="./derive", version= "^3.2.0", optional=true }
+ferrishot_knus-derive = { path="./derive", version= "^3.2.0", optional=true }
 base64 = { version="0.22.1", optional=true }
 unicode-width = { version="0.2.0", optional=true }
 minicbor = { version="0.25.1", optional=true, features=["std", "derive"] }
@@ -35,5 +35,5 @@ serde_json = "1.0"
 
 [features]
 default = ["derive", "base64", "line-numbers"]
-derive = ["knus-derive"]
+derive = ["ferrishot_knus-derive"]
 line-numbers = ["unicode-width"]

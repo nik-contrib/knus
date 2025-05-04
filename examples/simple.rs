@@ -2,23 +2,23 @@ use std::io::Read;
 
 use miette::IntoDiagnostic;
 
-#[derive(knus::Decode, Debug)]
+#[derive(ferrishot_knus::Decode, Debug)]
 #[allow(dead_code)]
 struct Plugin {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: String,
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     url: String,
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     version: String,
 }
 
-#[derive(knus::Decode, Debug)]
+#[derive(ferrishot_knus::Decode, Debug)]
 #[allow(dead_code)]
 struct Config {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     version: String,
-    #[knus(children(name = "plugin"))]
+    #[ferrishot_knus(children(name = "plugin"))]
     plugins: Vec<Plugin>,
 }
 
@@ -28,7 +28,7 @@ fn main() -> miette::Result<()> {
     std::io::stdin()
         .read_to_string(&mut buf)
         .into_diagnostic()?;
-    let cfg: Config = knus::parse("<stdin>", &buf)?;
+    let cfg: Config = ferrishot_knus::parse("<stdin>", &buf)?;
     println!("{:#?}", cfg);
     Ok(())
 }

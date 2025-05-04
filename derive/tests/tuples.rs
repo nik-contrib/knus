@@ -2,36 +2,36 @@ use std::fmt;
 
 use miette::Diagnostic;
 
-use knus::{span::Span, Decode};
+use ferrishot_knus::{span::Span, Decode};
 
 #[derive(Debug, Decode, PartialEq)]
 struct Unit;
 
 #[derive(Debug, Decode, PartialEq)]
-struct Arg(#[knus(argument)] u32);
+struct Arg(#[ferrishot_knus(argument)] u32);
 
 #[derive(Debug, Decode, PartialEq)]
 struct Opt(Option<Arg>);
 
 #[derive(Debug, Decode, PartialEq)]
-struct Extra(#[knus(argument)] Option<String>, u32);
+struct Extra(#[ferrishot_knus(argument)] Option<String>, u32);
 
 #[derive(Debug, Decode, PartialEq)]
 enum Enum {
     Unit,
-    Arg(#[knus(argument)] u32),
+    Arg(#[ferrishot_knus(argument)] u32),
     Opt(Option<Arg>),
-    Extra(#[knus(argument)] Option<String>, u32),
+    Extra(#[ferrishot_knus(argument)] Option<String>, u32),
 }
 
 fn parse<T: Decode<Span>>(text: &str) -> T {
-    let mut nodes: Vec<T> = knus::parse("<test>", text).unwrap();
+    let mut nodes: Vec<T> = ferrishot_knus::parse("<test>", text).unwrap();
     assert_eq!(nodes.len(), 1);
     nodes.remove(0)
 }
 
 fn parse_err<T: Decode<Span> + fmt::Debug>(text: &str) -> String {
-    let err = knus::parse::<Vec<T>>("<test>", text).unwrap_err();
+    let err = ferrishot_knus::parse::<Vec<T>>("<test>", text).unwrap_err();
     err.related()
         .unwrap()
         .map(|e| e.to_string())
