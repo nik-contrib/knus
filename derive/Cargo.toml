@@ -1,14 +1,14 @@
 [package]
-name = "knus-derive"
+name = "ferrishot_knus-derive"
 version = "3.3.1"
 edition = "2024"
 description = """
-    A derive implementation for knus KDL parser
+    A derive implementation for ferrishot_knus KDL parser
 """
 license = "MIT/Apache-2.0"
 keywords = ["kdl", "configuration"]
-homepage = "https://github.com/TheLostLambda/knus"
-documentation = "https://docs.rs/knus"
+homepage = "https://github.com/TheLostLambda/ferrishot_knus"
+documentation = "https://docs.rs/ferrishot_knus"
 readme = "README.md"
 
 [lib]
@@ -22,5 +22,5 @@ proc-macro2 = "1.0.95"
 proc-macro-error2 = "2.0.1"
 
 [dev-dependencies]
-knus = { path=".." }
+ferrishot_knus = { path=".." }
 miette = { version="7.6.0", features=["fancy"] }

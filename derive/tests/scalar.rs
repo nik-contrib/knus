@@ -1,29 +1,29 @@
 use std::fmt;
 
-use knus::Decode;
-use knus::span::Span;
+use ferrishot_knus::Decode;
+use ferrishot_knus::span::Span;
 use miette::Diagnostic;
 
-#[derive(knus::DecodeScalar, Debug, PartialEq)]
+#[derive(ferrishot_knus::DecodeScalar, Debug, PartialEq)]
 enum SomeScalar {
     First,
     AnotherOption,
 }
 
-#[derive(knus::Decode, Debug, PartialEq)]
+#[derive(ferrishot_knus::Decode, Debug, PartialEq)]
 struct Item {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     value: SomeScalar,
 }
 
 fn parse<T: Decode<Span>>(text: &str) -> T {
-    let mut nodes: Vec<T> = knus::parse("<test>", text).unwrap();
+    let mut nodes: Vec<T> = ferrishot_knus::parse("<test>", text).unwrap();
     assert_eq!(nodes.len(), 1);
     nodes.remove(0)
 }
 
 fn parse_err<T: Decode<Span> + fmt::Debug>(text: &str) -> String {
-    let err = knus::parse::<Vec<T>>("<test>", text).unwrap_err();
+    let err = ferrishot_knus::parse::<Vec<T>>("<test>", text).unwrap_err();
     err.related()
         .unwrap()
         .map(|e| e.to_string())

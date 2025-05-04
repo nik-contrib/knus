@@ -15,7 +15,7 @@ pub mod span;
 pub mod traits;
 
 #[cfg(feature = "derive")]
-pub use knus_derive::{Decode, DecodeScalar};
+pub use ferrishot_knus_derive::{Decode, DecodeScalar};
 
 pub use errors::Error;
 pub use traits::{Decode, DecodeChildren, DecodeScalar};

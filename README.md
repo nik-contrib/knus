@@ -4,10 +4,10 @@ convenient derive macros.
 # Repo Maintenance
 
 In brief, I'll be around to review and merge PRs, but I may not have much time to fix issues / write code myself.
-I'm currently working on a successor to `knus` in the form of `facet-kdl` (which will greatly reduce the burden of maintenance by reusing `kdl-rs`s parsing code and `facet`s derive macro).
+I'm currently working on a successor to `ferrishot_knus` in the form of `facet-kdl` (which will greatly reduce the burden of maintenance by reusing `kdl-rs`s parsing code and `facet`s derive macro).
 
 In the meantime, I'm very happy to take on co-maintainers so that I'm not a single point of failure when it comes to merging PRs.
-That way I can be safely hit by a bus, and the `knus` community can carry on without another fork!
+That way I can be safely hit by a bus, and the `ferrishot_knus` community can carry on without another fork!
 
 # About KDL
 
@@ -44,30 +44,30 @@ intersections for the arrows)
 
 Most common usage of this library is using `derive` and [parse] function:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 enum TopLevelNode {
     Route(Route),
     Plugin(Plugin),
 }
 
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Route {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     path: String,
-    #[knus(children(name="route"))]
+    #[ferrishot_knus(children(name="route"))]
     subroutes: Vec<Route>,
 }
 
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Plugin {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: String,
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     url: String,
 }
 
 # fn main() -> miette::Result<()> {
-let config = knus::parse::<Vec<TopLevelNode>>("example.kdl", r#"
+let config = ferrishot_knus::parse::<Vec<TopLevelNode>>("example.kdl", r#"
     route "/api" {
         route "/api/v1"
     }
@@ -79,13 +79,13 @@ let config = knus::parse::<Vec<TopLevelNode>>("example.kdl", r#"
 
 This parses into a vector of nodes as enums `TopLevelNode`, but you also use some node as a root of the document if there is no properties and arguments declared:
 ```rust,ignore
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Document {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     version: Option<String>,
-    #[knus(children(name="route"))]
+    #[ferrishot_knus(children(name="route"))]
     routes: Vec<Route>,
-    #[knus(children(name="plugin"))]
+    #[ferrishot_knus(children(name="plugin"))]
     plugins: Vec<Plugin>,
 }
 
@@ -106,7 +106,7 @@ reference on allowed attributes and parse modes.
 
 This crate publishes nice errors, like this:
 
-<img width="50%" src="https://raw.githubusercontent.com/TheLostLambda/knus/main/images/error.png" alt="
+<img width="50%" src="https://raw.githubusercontent.com/TheLostLambda/ferrishot_knus/main/images/error.png" alt="
 Screenshot of error. Here is how narratable printer would print the error:
 Error: single char expected after `Alt+`
     Diagnostic severity: error
@@ -128,11 +128,11 @@ miette = { version="7.2.0", features=["fancy"] }
 And the error returned from parser should be converted to [miette::Report] and
 printed with debugging handler. The most manual way to do that is:
 ```rust
-# #[derive(knus::Decode, Debug)]
+# #[derive(ferrishot_knus::Decode, Debug)]
 # struct Config {}
 # let file_name = "1.kdl";
 # let text = "";
-let config = match knus::parse::<Config>(file_name, text) {
+let config = match ferrishot_knus::parse::<Config>(file_name, text) {
     Ok(config) => config,
     Err(e) => {
          println!("{:?}", miette::Report::new(e));
@@ -143,14 +143,14 @@ let config = match knus::parse::<Config>(file_name, text) {
 But usually function that returns `miette::Result` is good enough:
 ```rust,no_run
 # use std::fs;
-# #[derive(knus::Decode)]
+# #[derive(ferrishot_knus::Decode)]
 # struct Config {}
 use miette::{IntoDiagnostic, Context};
 
 fn parse_config(path: &str) -> miette::Result<Config> {
     let text = fs::read_to_string(path).into_diagnostic()
         .wrap_err_with(|| format!("cannot read {:?}", path))?;
-    Ok(knus::parse(path, &text)?)
+    Ok(ferrishot_knus::parse(path, &text)?)
 }
 fn main() -> miette::Result<()> {
     let config = parse_config("my.kdl")?;
@@ -162,7 +162,7 @@ See [miette guide] for other ways of configuring error output.
 
 # The Name
 
-KDL is pronounced as cuddle, and "knus" has a similar meaning in Danish. It
+KDL is pronounced as cuddle, and "ferrishot_knus" has a similar meaning in Danish. It
 also pays homage to `knuffel`, the repository this one was forked from, starts
 with a "K" like KDL, and is easy to remember and type.
 

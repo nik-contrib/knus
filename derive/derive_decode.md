@@ -1,4 +1,4 @@
-The derive is the most interesting part of the `knus` libary.
+The derive is the most interesting part of the `ferrishot_knus` libary.
 
 # Overview
 
@@ -21,15 +21,15 @@ and [children](#children). Unlike in `serde` and similar projects,
 non-annotated fields are not decoded from source and are filled with
 [`std::default::Default`].
 
-All annotations are enclosed by `#[knus(..)]` attribute.
+All annotations are enclosed by `#[ferrishot_knus(..)]` attribute.
 
 Both arguments and properties can decode [scalars](#scalars).
 
 If structure only has `child` and `children` fields (see [below](#children)) it
-can be used as a root document (the output of [`knus::parse`]). Or root of
+can be used as a root document (the output of [`ferrishot_knus::parse`]). Or root of
 the document can be `Vec<T> where T: Decode`.
 
-[`knus::parse`]: fn.parse.html
+[`ferrishot_knus::parse`]: fn.parse.html
 
 Note: node name is usually not used in the structure decoding node, it's
 matched either in parent or in an [enum](#enums).
@@ -53,24 +53,24 @@ node "arg1" true 1 22 333
 ```
 ... can be parsed into the following structure:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     first: String,
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     second: bool,
-    #[knus(arguments)]
+    #[ferrishot_knus(arguments)]
     numbers: Vec<u32>,
 }
 ```
 
 Arguments can be optional:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     first: Option<String>,
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     second: Option<bool>,
 }
 ```
@@ -88,11 +88,11 @@ Note: due to limitations of the procedural macros in Rust, optional arguments
 must use `Option` in this specific notation. Other variations like these:
 ```
 use std::option::Option as Opt;
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     first: ::std::option::Option<String>,
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     second: Opt<bool>,
 }
 ```
@@ -125,24 +125,24 @@ node name="arg1" enabled=true a=1 b=2 c=3
 Can be parsed into the following structure:
 ```rust
 # use std::collections::HashMap;
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     name: String,
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     enabled: bool,
-    #[knus(properties)]
+    #[ferrishot_knus(properties)]
     numbers: HashMap<String, u32>,
 }
 ```
 
 Properties can be optional:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     name: Option<String>,
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     enabled: Option<bool>,
 }
 ```
@@ -156,11 +156,11 @@ Note: due to limitations of the procedural macros in Rust, optional properties
 must use `Option` in this specific notation. Other variations like this:
 ```rust
 use std::option::Option as Opt;
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     name: ::std::option::Option<String>,
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     enabled: Opt<bool>,
 }
 ```
@@ -169,9 +169,9 @@ Do not work (they will always require `property=null`).
 By default, field name is renamed to use `kebab-case` in KDL file. So field
 defined like this:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     plugin_name: String,
 }
 ```
@@ -182,9 +182,9 @@ node plugin-name="my_plugin"
 
 To rename a property in the source use `name=`:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property(name="pluginName"))]
+    #[ferrishot_knus(property(name="pluginName"))]
     name: String,
 }
 ```
@@ -208,13 +208,13 @@ All of them work on [properties](#properties) and [arguments](#arguments).
 ## Parsing Strings
 
 The `str` marker is very useful for types coming from other libraries that
-aren't supported by `knus` directly.
+aren't supported by `ferrishot_knus` directly.
 
 For example:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Server {
-    #[knus(property, str)]
+    #[ferrishot_knus(property, str)]
     listen: std::net::SocketAddr,
 }
 ```
@@ -231,9 +231,9 @@ as byte buffer.
 
 For example:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Response {
-    #[knus(argument, bytes)]
+    #[ferrishot_knus(argument, bytes)]
     body: Vec<u8>,
 }
 ```
@@ -289,21 +289,21 @@ node {
 ```
 ... can be parsed by into the following structures:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 enum Setting {
-    Plugin(#[knus(argument)] String),
-    Datum(#[knus(argument)] String),
+    Plugin(#[ferrishot_knus(argument)] String),
+    Datum(#[ferrishot_knus(argument)] String),
 }
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Version {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     number: u32
 }
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     version: Version,
-    #[knus(children)]
+    #[ferrishot_knus(children)]
     settings: Vec<Setting>
 }
 ```
@@ -311,16 +311,16 @@ struct MyNode {
 There is another form of children which is `children(name="something")`, that
 allows filtering nodes by name:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct NamedNode {
-    #[knus(argument)]
+    #[ferrishot_knus(argument)]
     name: u32
 }
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(children(name="plugin"))]
+    #[ferrishot_knus(children(name="plugin"))]
     plugins: Vec<NamedNode>,
-    #[knus(children(name="datum"))]
+    #[ferrishot_knus(children(name="datum"))]
     data: Vec<NamedNode>,
 }
 ```
@@ -342,9 +342,9 @@ plugin "second"
 ```
 ... can be parsed into the list of the following structures:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Plugin {
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     auto_start: bool,
 }
 ```
@@ -355,7 +355,7 @@ No arguments, properties and children are allowed in the boolean nodes.
 
 Note: due to limitations of the procedural macros in Rust, boolean children
 must use `bool` in this specific notation. If you shadow `bool` type by some
-import the results are undefined (knus will still think it's bool node, but
+import the results are undefined (ferrishot_knus will still think it's bool node, but
 it may not work).
 
 
@@ -367,22 +367,22 @@ important role in making document readable.
 
 It works by transforming the following:
 ```rust,ignore
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Node {
-    #[knus(child, unwrap(/* attributes */))]
+    #[ferrishot_knus(child, unwrap(/* attributes */))]
     field: String,
 }
 ```
 ... into something like this:
 ```
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct TmpChild {
-    #[knus(/* attributes */)]
+    #[ferrishot_knus(/* attributes */)]
     field: String,
 }
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Node {
-    #[knus(child)]
+    #[ferrishot_knus(child)]
     field: TmpChild,
 }
 ```
@@ -415,11 +415,11 @@ plugin {
 
 Here is the respective Rust structure:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Plugin {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     name: String,
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     url: String,
 }
 ```
@@ -452,13 +452,13 @@ files {
 ```
 This can be parsed into the following structure:
 ```rust
-# #[derive(knus::Decode)] struct Plugin {}
-# #[derive(knus::Decode)] struct File {}
-#[derive(knus::Decode)]
+# #[derive(ferrishot_knus::Decode)] struct Plugin {}
+# #[derive(ferrishot_knus::Decode)] struct File {}
+#[derive(ferrishot_knus::Decode)]
 struct Document {
-    #[knus(child, unwrap(children(name="plugin")))]
+    #[ferrishot_knus(child, unwrap(children(name="plugin")))]
     plugins: Vec<Plugin>,
-    #[knus(child, unwrap(children(name="file")))]
+    #[ferrishot_knus(child, unwrap(children(name="file")))]
     files: Vec<File>,
 }
 ```
@@ -474,29 +474,29 @@ unmarked ones, can be used as the root of the document.
 
 For example, this structure can:
 ```rust
-# #[derive(knus::Decode)]
-# struct NamedNode { #[knus(argument)] name: u32 }
-#[derive(knus::Decode)]
+# #[derive(ferrishot_knus::Decode)]
+# struct NamedNode { #[ferrishot_knus(argument)] name: u32 }
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     version: u32,
-    #[knus(children(name="plugin"))]
+    #[ferrishot_knus(children(name="plugin"))]
     plugins: Vec<NamedNode>,
-    #[knus(children(name="datum"))]
+    #[ferrishot_knus(children(name="datum"))]
     data: Vec<NamedNode>,
 }
 ```
 On the other hand this one can **not** because it contains a `property`:
 ```rust
-# #[derive(knus::Decode)]
-# struct NamedNode { #[knus(argument)] name: u32 }
-#[derive(knus::Decode)]
+# #[derive(ferrishot_knus::Decode)]
+# struct NamedNode { #[ferrishot_knus(argument)] name: u32 }
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property)]
+    #[ferrishot_knus(property)]
     version: u32,
-    #[knus(children(name="plugin"))]
+    #[ferrishot_knus(children(name="plugin"))]
     plugins: Vec<NamedNode>,
-    #[knus(children(name="datum"))]
+    #[ferrishot_knus(children(name="datum"))]
     data: Vec<NamedNode>,
 }
 ```
@@ -516,9 +516,9 @@ implemented for the structures that can be used as documents.
 
 There are two forms of it. Marker attribute:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property, default)]
+    #[ferrishot_knus(property, default)]
     first: String,
 }
 ```
@@ -527,9 +527,9 @@ filled otherwise (i.e. no such property encountered).
 
 Another form is `default=value`:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property, default="unnamed".into())]
+    #[ferrishot_knus(property, default="unnamed".into())]
     name: String,
 }
 ```
@@ -539,9 +539,9 @@ Note, for optional properties `Some` should be included in the default value.
 And for scalar values their value can be overriden by using `null`. The
 definition like this:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct MyNode {
-    #[knus(property, default=Some("unnamed".into()))]
+    #[ferrishot_knus(property, default=Some("unnamed".into()))]
     name: Option<String>,
 }
 ```
@@ -566,18 +566,18 @@ properties or children into another structure.
 
 For example:
 ```rust
-#[derive(knus::Decode, Default)]
+#[derive(ferrishot_knus::Decode, Default)]
 struct Common {
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     name: Option<String>,
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     description: Option<String>
 }
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Plugin {
-    #[knus(flatten(child))]
+    #[ferrishot_knus(flatten(child))]
     common: Common,
-    #[knus(child, unwrap(argument))]
+    #[ferrishot_knus(child, unwrap(argument))]
     url: String,
 }
 ```
@@ -616,14 +616,14 @@ Here is the example of the node with the type name (the name in parens):
 (text)document name="New Document" { }
 ```
 
-By default knus doesn't allow type names for nodes as these are quite rare.
+By default ferrishot_knus doesn't allow type names for nodes as these are quite rare.
 
 To allow type names on specific node and to have the name stored use
 `type_name` attribute:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Node {
-    #[knus(type_name)]
+    #[ferrishot_knus(type_name)]
     type_name: String,
 }
 ```
@@ -648,22 +648,22 @@ impl std::str::FromStr for PluginType {
     }
 }
 
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Node {
-    #[knus(type_name)]
+    #[ferrishot_knus(type_name)]
     type_name: PluginType,
 }
 ```
 
 ## Node Name
 
-In knus, it's common that parent node, document or enum type checks the node name of the node, and node name is not stored or validated in the strucuture.
+In ferrishot_knus, it's common that parent node, document or enum type checks the node name of the node, and node name is not stored or validated in the strucuture.
 
 But for the cases where you need it, it's possible to store too:
 ```rust
-#[derive(knus::Decode)]
+#[derive(ferrishot_knus::Decode)]
 struct Node {
-    #[knus(node_name)]
+    #[ferrishot_knus(node_name)]
     node_name: String,
 }
 ```
@@ -676,12 +676,12 @@ Node name always exists so optional node_name is not supported.
 
 The following definition:
 ```rust
-use knus::span::Span;  // or LineSpan
+use ferrishot_knus::span::Span;  // or LineSpan
 
-#[derive(knus::Decode)]
-#[knus(span_type=Span)]
+#[derive(ferrishot_knus::Decode)]
+#[ferrishot_knus(span_type=Span)]
 struct Node {
-    #[knus(span)]
+    #[ferrishot_knus(span)]
     span: Span,  // This can be user type decoded from Span
 }
 ```
@@ -712,13 +712,13 @@ finish
 ```
 The following enum might be used:
 ```rust
-# #[derive(knus::Decode)] struct PrintString {}
-#[derive(knus::Decode)]
+# #[derive(ferrishot_knus::Decode)] struct PrintString {}
+#[derive(ferrishot_knus::Decode)]
 enum Action {
-    Create(#[knus(argument)] String),
+    Create(#[ferrishot_knus(argument)] String),
     PrintString(PrintString),
     Finish,
-    #[knus(skip)]
+    #[ferrishot_knus(skip)]
     InternalAction,
 }
 ```
@@ -750,12 +750,12 @@ implement `DecodeSpan` for any type.
 
 Use use `span_type=` for implemenation of specific type:
 ```rust
-use knus::span::Span;  // or LineSpan
+use ferrishot_knus::span::Span;  // or LineSpan
 
-#[derive(knus::Decode)]
-#[knus(span_type=Span)]
+#[derive(ferrishot_knus::Decode)]
+#[ferrishot_knus(span_type=Span)]
 struct MyStruct {
-    #[knus(span)]
+    #[ferrishot_knus(span)]
     span: Span,
 }
 ```

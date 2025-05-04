@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- Made the fields of `knus::ast::Integer` and `knus::ast::Decimal` public (#1)
+- Made the fields of `ferrishot_knus::ast::Integer` and `ferrishot_knus::ast::Decimal` public (#1)
 - Changed `parse_*` functions to take `file_name: impl AsRef<str>` to match `miette` (#18)
 
 ### Fixed
@@ -25,6 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 The beginning of time — this version is identical to [`knuffel` v3.2.0](https://crates.io/crates/knuffel/3.2.0).
 
-[unreleased]: https://github.com/TheLostLambda/knus/compare/v3.3.1...HEAD
-[3.3.1]: https://github.com/TheLostLambda/knus/compare/v3.2.0...v3.3.1
-[3.2.0]: https://github.com/TheLostLambda/knus/releases/tag/v3.2.0
+[unreleased]: https://github.com/TheLostLambda/ferrishot_knus/compare/v3.3.1...HEAD
+[3.3.1]: https://github.com/TheLostLambda/ferrishot_knus/compare/v3.2.0...v3.3.1
+[3.2.0]: https://github.com/TheLostLambda/ferrishot_knus/releases/tag/v3.2.0

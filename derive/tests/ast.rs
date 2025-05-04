@@ -1,15 +1,15 @@
-use knus::span::Span;
-use knus::traits::Decode;
+use ferrishot_knus::span::Span;
+use ferrishot_knus::traits::Decode;
 
-#[derive(knus_derive::Decode, Debug)]
-#[knus(span_type=knus::span::Span)]
+#[derive(ferrishot_knus_derive::Decode, Debug)]
+#[ferrishot_knus(span_type=ferrishot_knus::span::Span)]
 struct AstChildren {
-    #[knus(children)]
-    children: Vec<knus::ast::SpannedNode<Span>>,
+    #[ferrishot_knus(children)]
+    children: Vec<ferrishot_knus::ast::SpannedNode<Span>>,
 }
 
 fn parse<T: Decode<Span>>(text: &str) -> T {
-    let mut nodes: Vec<T> = knus::parse("<test>", text).unwrap();
+    let mut nodes: Vec<T> = ferrishot_knus::parse("<test>", text).unwrap();
     assert_eq!(nodes.len(), 1);
     nodes.remove(0)
 }

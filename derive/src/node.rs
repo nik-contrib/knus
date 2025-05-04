@@ -38,7 +38,7 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
         common_generics
             .make_where_clause()
             .predicates
-            .push(syn::parse2(quote!(S: ::knus::traits::ErrorSpan)).unwrap());
+            .push(syn::parse2(quote!(S: ::ferrishot_knus::traits::ErrorSpan)).unwrap());
     };
     let trait_gen = quote!(<#span_ty>);
     let (impl_gen, _, bounds) = common_generics.split_for_impl();
@@ -87,22 +87,22 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
         let insert_child = insert_child(&common, &node)?;
         let insert_property = insert_property(&common, &name, &value)?;
         extra_traits.push(quote! {
-            impl #impl_gen ::knus::traits::DecodePartial #trait_gen
+            impl #impl_gen ::ferrishot_knus::traits::DecodePartial #trait_gen
                 for #s_name #type_gen
                 #bounds
             {
                 fn insert_child(&mut self,
-                    #node: &::knus::ast::SpannedNode<#span_ty>,
-                    #ctx: &mut ::knus::decode::Context<#span_ty>)
-                    -> ::std::result::Result<bool, ::knus::errors::DecodeError<#span_ty>>
+                    #node: &::ferrishot_knus::ast::SpannedNode<#span_ty>,
+                    #ctx: &mut ::ferrishot_knus::decode::Context<#span_ty>)
+                    -> ::std::result::Result<bool, ::ferrishot_knus::errors::DecodeError<#span_ty>>
                 {
                     #insert_child
                 }
                 fn insert_property(&mut self,
-                    #name: &::knus::span::Spanned<Box<str>, #span_ty>,
-                    #value: &::knus::ast::Value<#span_ty>,
-                    #ctx: &mut ::knus::decode::Context<#span_ty>)
-                    -> ::std::result::Result<bool, ::knus::errors::DecodeError<#span_ty>>
+                    #name: &::ferrishot_knus::span::Spanned<Box<str>, #span_ty>,
+                    #value: &::ferrishot_knus::ast::Value<#span_ty>,
+                    #ctx: &mut ::ferrishot_knus::decode::Context<#span_ty>)
+                    -> ::std::result::Result<bool, ::ferrishot_knus::errors::DecodeError<#span_ty>>
                 {
                     #insert_property
                 }
@@ -117,14 +117,14 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
     {
         let decode_children = decode_children(&common, &children, None)?;
         extra_traits.push(quote! {
-            impl #impl_gen ::knus::traits::DecodeChildren #trait_gen
+            impl #impl_gen ::ferrishot_knus::traits::DecodeChildren #trait_gen
                 for #s_name #type_gen
                 #bounds
             {
                 fn decode_children(
-                    #children: &[::knus::ast::SpannedNode<#span_ty>],
-                    #ctx: &mut ::knus::decode::Context<#span_ty>)
-                    -> ::std::result::Result<Self, ::knus::errors::DecodeError<#span_ty>>
+                    #children: &[::ferrishot_knus::ast::SpannedNode<#span_ty>],
+                    #ctx: &mut ::ferrishot_knus::decode::Context<#span_ty>)
+                    -> ::std::result::Result<Self, ::ferrishot_knus::errors::DecodeError<#span_ty>>
                 {
                     #decode_children
                     #assign_extra
@@ -135,12 +135,12 @@ pub fn emit_struct(s: &Struct, named: bool) -> syn::Result<TokenStream> {
     }
     Ok(quote! {
         #(#extra_traits)*
-        impl #impl_gen ::knus::Decode #trait_gen for #s_name #type_gen
+        impl #impl_gen ::ferrishot_knus::Decode #trait_gen for #s_name #type_gen
             #bounds
         {
-            fn decode_node(#node: &::knus::ast::SpannedNode<#span_ty>,
-                           #ctx: &mut ::knus::decode::Context<#span_ty>)
-                -> ::std::result::Result<Self, ::knus::errors::DecodeError<#span_ty>>
+            fn decode_node(#node: &::ferrishot_knus::ast::SpannedNode<#span_ty>,
+                           #ctx: &mut ::ferrishot_knus::decode::Context<#span_ty>)
+                -> ::std::result::Result<Self, ::ferrishot_knus::errors::DecodeError<#span_ty>>
             {
                 #decode_specials
                 #decode_args
@@ -159,18 +159,18 @@ pub fn emit_new_type(s: &NewType) -> syn::Result<TokenStream> {
     let node = syn::Ident::new("node", Span::mixed_site());
     let ctx = syn::Ident::new("ctx", Span::mixed_site());
     Ok(quote! {
-        impl<S: ::knus::traits::ErrorSpan>
-            ::knus::Decode<S> for #s_name
+        impl<S: ::ferrishot_knus::traits::ErrorSpan>
+            ::ferrishot_knus::Decode<S> for #s_name
         {
-            fn decode_node(#node: &::knus::ast::SpannedNode<S>,
-                           #ctx: &mut ::knus::decode::Context<S>)
-                -> ::std::result::Result<Self, ::knus::errors::DecodeError<S>>
+            fn decode_node(#node: &::ferrishot_knus::ast::SpannedNode<S>,
+                           #ctx: &mut ::ferrishot_knus::decode::Context<S>)
+                -> ::std::result::Result<Self, ::ferrishot_knus::errors::DecodeError<S>>
             {
                 if #node.arguments.len() > 0 ||
                     #node.properties.len() > 0 ||
                     #node.children.is_some()
                 {
-                    ::knus::Decode::decode_node(#node, #ctx)
+                    ::ferrishot_knus::Decode::decode_node(#node, #ctx)
                         .map(Some)
                         .map(#s_name)
                 } else {
@@ -229,31 +229,31 @@ fn decode_value(
 ) -> syn::Result<TokenStream> {
     match mode {
         DecodeMode::Normal => Ok(quote! {
-            ::knus::traits::DecodeScalar::decode(#val, #ctx)
+            ::ferrishot_knus::traits::DecodeScalar::decode(#val, #ctx)
         }),
         DecodeMode::Str if optional => {
             Ok(quote![{
                 if let Some(typ) = &#val.type_name {
-                    #ctx.emit_error(::knus::errors::DecodeError::TypeName {
+                    #ctx.emit_error(::ferrishot_knus::errors::DecodeError::TypeName {
                         span: typ.span().clone(),
                         found: Some((**typ).clone()),
-                        expected: ::knus::errors::ExpectedType::no_type(),
+                        expected: ::ferrishot_knus::errors::ExpectedType::no_type(),
                         rust_type: "str", // TODO(tailhook) show field type
                     });
                 }
                 match *#val.literal {
-                    ::knus::ast::Literal::String(ref s) => {
+                    ::ferrishot_knus::ast::Literal::String(ref s) => {
                         ::std::str::FromStr::from_str(s).map_err(|e| {
-                            ::knus::errors::DecodeError::conversion(
+                            ::ferrishot_knus::errors::DecodeError::conversion(
                                 &#val.literal, e)
                         })
                         .map(Some)
                     }
-                    ::knus::ast::Literal::Null => Ok(None),
+                    ::ferrishot_knus::ast::Literal::Null => Ok(None),
                     _ => {
                         #ctx.emit_error(
-                            ::knus::errors::DecodeError::scalar_kind(
-                                ::knus::decode::Kind::String,
+                            ::ferrishot_knus::errors::DecodeError::scalar_kind(
+                                ::ferrishot_knus::decode::Kind::String,
                                 &#val.literal,
                             )
                         );
@@ -265,36 +265,36 @@ fn decode_value(
         DecodeMode::Str => {
             Ok(quote![{
                 if let Some(typ) = &#val.type_name {
-                    #ctx.emit_error(::knus::errors::DecodeError::TypeName {
+                    #ctx.emit_error(::ferrishot_knus::errors::DecodeError::TypeName {
                         span: typ.span().clone(),
                         found: Some((**typ).clone()),
-                        expected: ::knus::errors::ExpectedType::no_type(),
+                        expected: ::ferrishot_knus::errors::ExpectedType::no_type(),
                         rust_type: "str", // TODO(tailhook) show field type
                     });
                 }
                 match *#val.literal {
-                    ::knus::ast::Literal::String(ref s) => {
+                    ::ferrishot_knus::ast::Literal::String(ref s) => {
                         ::std::str::FromStr::from_str(s).map_err(|e| {
-                            ::knus::errors::DecodeError::conversion(
+                            ::ferrishot_knus::errors::DecodeError::conversion(
                                 &#val.literal, e)
                         })
                     }
-                    _ => Err(::knus::errors::DecodeError::scalar_kind(
-                        ::knus::decode::Kind::String,
+                    _ => Err(::ferrishot_knus::errors::DecodeError::scalar_kind(
+                        ::ferrishot_knus::decode::Kind::String,
                         &#val.literal,
                     )),
                 }
             }])
         }
         DecodeMode::Bytes if optional => Ok(quote! {
-            if matches!(&*#val.literal, ::knus::ast::Literal::Null) {
+            if matches!(&*#val.literal, ::ferrishot_knus::ast::Literal::Null) {
                 Ok(None)
             } else {
-                match ::knus::decode::bytes(#val, #ctx).try_into() {
+                match ::ferrishot_knus::decode::bytes(#val, #ctx).try_into() {
                     Ok(v) => Ok(Some(v)),
                     Err(e) => {
                         #ctx.emit_error(
-                            ::knus::errors::DecodeError::conversion(
+                            ::ferrishot_knus::errors::DecodeError::conversion(
                                 &#val.literal, e));
                         Ok(None)
                     }
@@ -302,8 +302,8 @@ fn decode_value(
             }
         }),
         DecodeMode::Bytes => Ok(quote! {
-            ::knus::decode::bytes(#val, #ctx).try_into()
-            .map_err(|e| ::knus::errors::DecodeError::conversion(
+            ::ferrishot_knus::decode::bytes(#val, #ctx).try_into()
+            .map_err(|e| ::ferrishot_knus::errors::DecodeError::conversion(
                     &#val.literal, e))
         }),
     }
@@ -314,7 +314,7 @@ fn decode_specials(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
     let spans = s.object.spans.iter().flat_map(|span| {
         let fld = &span.field.tmp_name;
         quote! {
-            let #fld = ::knus::traits::DecodeSpan::decode_span(
+            let #fld = ::ferrishot_knus::traits::DecodeSpan::decode_span(
                 #node.span(),
                 #ctx,
             );
@@ -325,7 +325,7 @@ fn decode_specials(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
         quote! {
             let #fld = #node.node_name.parse()
                 .map_err(|e| {
-                    ::knus::errors::DecodeError::conversion(
+                    ::ferrishot_knus::errors::DecodeError::conversion(
                         &#node.node_name, e)
                 })?;
         }
@@ -338,7 +338,7 @@ fn decode_specials(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
                     tn.as_str()
                         .parse()
                         .map_err(|e| {
-                            ::knus::errors::DecodeError::conversion(tn, e)
+                            ::ferrishot_knus::errors::DecodeError::conversion(tn, e)
                         })
                 }).transpose()?;
             }
@@ -348,10 +348,10 @@ fn decode_specials(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
                     tn.as_str()
                         .parse()
                         .map_err(|e| {
-                            ::knus::errors::DecodeError::conversion(tn, e)
+                            ::ferrishot_knus::errors::DecodeError::conversion(tn, e)
                         })?
                 } else {
-                    return Err(::knus::errors::DecodeError::missing(
+                    return Err(::ferrishot_knus::errors::DecodeError::missing(
                         #node, "type name required"));
                 };
             }
@@ -360,7 +360,7 @@ fn decode_specials(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
     let validate_type = if s.object.type_names.is_empty() {
         Some(quote! {
             if let Some(type_name) = &#node.type_name {
-                #ctx.emit_error(::knus::errors::DecodeError::unexpected(
+                #ctx.emit_error(::ferrishot_knus::errors::DecodeError::unexpected(
                             type_name, "type name",
                             "no type name expected for this node"));
             }
@@ -404,7 +404,7 @@ fn decode_args(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
                 decoder.push(quote! {
                     let #val =
                         #iter_args.next().ok_or_else(|| {
-                            ::knus::errors::DecodeError::missing(
+                            ::ferrishot_knus::errors::DecodeError::missing(
                                 #node, #error)
                         })?;
                     let #fld = #decode_value?;
@@ -438,7 +438,7 @@ fn decode_args(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
     } else {
         decoder.push(quote! {
             if let Some(val) = #iter_args.next() {
-                return Err(::knus::errors::DecodeError::unexpected(
+                return Err(::ferrishot_knus::errors::DecodeError::unexpected(
                         &val.literal, "argument",
                         "unexpected argument"));
             }
@@ -466,7 +466,7 @@ fn decode_props(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
                 let mut #fld = ::std::default::Default::default();
             });
             match_branches.push(quote! {
-                _ if ::knus::traits::DecodePartial::
+                _ if ::ferrishot_knus::traits::DecodePartial::
                     insert_property(&mut #fld, #name, #val, #ctx)?
                 => {}
             });
@@ -511,7 +511,7 @@ fn decode_props(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
             } else if !prop.option {
                 postprocess.push(quote! {
                     let #fld = #fld.ok_or_else(|| {
-                        ::knus::errors::DecodeError::missing(
+                        ::ferrishot_knus::errors::DecodeError::missing(
                             #node, #req_msg)
                     })?;
                 });
@@ -528,7 +528,7 @@ fn decode_props(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
             #name_str => {
                 let converted_name = #name_str.parse()
                     .map_err(|e| {
-                        ::knus::errors::DecodeError::conversion(#name, e)
+                        ::ferrishot_knus::errors::DecodeError::conversion(#name, e)
                     })?;
                 #fld.push((
                     converted_name,
@@ -542,7 +542,7 @@ fn decode_props(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
     } else {
         match_branches.push(quote! {
             #name_str => {
-                return Err(::knus::errors::DecodeError::unexpected(
+                return Err(::ferrishot_knus::errors::DecodeError::unexpected(
                     #name, "property",
                     format!("unexpected property `{}`",
                             #name_str.escape_default())));
@@ -587,8 +587,8 @@ fn unwrap_fn(
     let decode_props = decode_props(&common, &node)?;
     let decode_children = decode_children(&common, &children, Some(quote!(#node.span())))?;
     Ok(quote! {
-        let mut #func = |#node: &::knus::ast::SpannedNode<#span_ty>,
-                         #ctx: &mut ::knus::decode::Context<#span_ty>|
+        let mut #func = |#node: &::ferrishot_knus::ast::SpannedNode<#span_ty>,
+                         #ctx: &mut ::ferrishot_knus::decode::Context<#span_ty>|
         {
             #decode_args
             #decode_props
@@ -619,7 +619,7 @@ fn decode_node(
         let unwrap_fn = unwrap_fn(common, &func, fld, unwrap)?;
         (unwrap_fn, quote!(#func))
     } else {
-        (quote!(), quote!(::knus::Decode::decode_node))
+        (quote!(), quote!(::ferrishot_knus::Decode::decode_node))
     };
     let value = syn::Ident::new("value", Span::mixed_site());
     let assign = if matches!(child_def.mode, ChildMode::Multi) {
@@ -660,7 +660,7 @@ fn insert_child(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
         let child_name = &child_def.name;
         if matches!(child_def.mode, ChildMode::Flatten) {
             match_branches.push(quote! {
-                _ if ::knus::traits::DecodePartial
+                _ if ::ferrishot_knus::traits::DecodePartial
                     ::insert_child(&mut #dest, #node, #ctx)?
                 => Ok(true),
             })
@@ -671,10 +671,10 @@ fn insert_child(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
             );
             match_branches.push(quote! {
                 #child_name => {
-                    ::knus::decode::check_flag_node(#node, #ctx);
+                    ::ferrishot_knus::decode::check_flag_node(#node, #ctx);
                     if #dest {
                         #ctx.emit_error(
-                            ::knus::errors::DecodeError::unexpected(
+                            ::ferrishot_knus::errors::DecodeError::unexpected(
                                 &#node.node_name, "node", #dup_err));
                     } else {
                         #dest = true;
@@ -692,7 +692,7 @@ fn insert_child(s: &Common, node: &syn::Ident) -> syn::Result<TokenStream> {
                 #child_name => {
                     if #dest.is_some() {
                         #ctx.emit_error(
-                            ::knus::errors::DecodeError::unexpected(
+                            ::ferrishot_knus::errors::DecodeError::unexpected(
                                 &#node.node_name, "node", #dup_err));
                     }
                     #decode
@@ -716,7 +716,7 @@ fn insert_property(s: &Common, name: &syn::Ident, value: &syn::Ident) -> syn::Re
         let prop_name = &prop.name;
         if prop.flatten {
             match_branches.push(quote! {
-                _ if ::knus::traits::DecodePartial
+                _ if ::ferrishot_knus::traits::DecodePartial
                     ::insert_property(&mut #dest, #name, #value, #ctx)?
                 => Ok(true),
             });
@@ -769,7 +769,7 @@ fn decode_children(
                 });
                 match_branches.push(quote! {
                     _ if (
-                        match ::knus::traits::DecodePartial
+                        match ::ferrishot_knus::traits::DecodePartial
                             ::insert_child(&mut #fld, #child, #ctx)
                         {
                             Ok(true) => return None,
@@ -837,7 +837,7 @@ fn decode_children(
                     #child_name => {
                         if #fld.is_some() {
                             Some(Err(
-                                ::knus::errors::DecodeError::unexpected(
+                                ::ferrishot_knus::errors::DecodeError::unexpected(
                                 &#child.node_name, "node", #dup_err)))
                         } else {
                             #decode
@@ -858,7 +858,7 @@ fn decode_children(
                     if let Some(span) = &err_span {
                         postprocess.push(quote! {
                             let #fld = #fld.ok_or_else(|| {
-                                ::knus::errors::DecodeError::Missing {
+                                ::ferrishot_knus::errors::DecodeError::Missing {
                                     span: #span.clone(),
                                     message: #req_msg.into(),
                                 }
@@ -867,7 +867,7 @@ fn decode_children(
                     } else {
                         postprocess.push(quote! {
                             let #fld = #fld.ok_or_else(|| {
-                                ::knus::errors::DecodeError::MissingNode {
+                                ::ferrishot_knus::errors::DecodeError::MissingNode {
                                     message: #req_msg.into(),
                                 }
                             })?;
@@ -885,10 +885,10 @@ fn decode_children(
                 });
                 match_branches.push(quote! {
                     #child_name => {
-                        ::knus::decode::check_flag_node(#child, #ctx);
+                        ::ferrishot_knus::decode::check_flag_node(#child, #ctx);
                         if #fld {
                             #ctx.emit_error(
-                                ::knus::errors::DecodeError::unexpected(
+                                ::ferrishot_knus::errors::DecodeError::unexpected(
                                     &#child.node_name, "node", #dup_err));
                         } else {
                             #fld = true;
@@ -907,7 +907,7 @@ fn decode_children(
             let unwrap_fn = unwrap_fn(s, &func, fld, unwrap)?;
             (unwrap_fn, quote!(#func))
         } else {
-            (quote!(), quote!(::knus::Decode::decode_node))
+            (quote!(), quote!(::ferrishot_knus::Decode::decode_node))
         };
 
         match_branches.push(quote! {
@@ -925,13 +925,13 @@ fn decode_children(
                 match &**#child.node_name {
                     #(#match_branches)*
                 }
-            }).collect::<::std::result::Result<_, ::knus::errors::DecodeError<_>>>()?;
+            }).collect::<::std::result::Result<_, ::ferrishot_knus::errors::DecodeError<_>>>()?;
             #(#postprocess)*
         })
     } else {
         match_branches.push(quote! {
             #name_str => {
-                #ctx.emit_error(::knus::errors::DecodeError::unexpected(
+                #ctx.emit_error(::ferrishot_knus::errors::DecodeError::unexpected(
                     #child, "node",
                     format!("unexpected node `{}`",
                             #name_str.escape_default())));
@@ -945,7 +945,7 @@ fn decode_children(
                 match &**#child.node_name {
                     #(#match_branches)*
                 }
-            }).collect::<::std::result::Result<(), ::knus::errors::DecodeError<_>>>()?;
+            }).collect::<::std::result::Result<(), ::ferrishot_knus::errors::DecodeError<_>>>()?;
             #(#postprocess)*
         })
     }
