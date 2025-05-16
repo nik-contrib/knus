@@ -343,9 +343,18 @@ impl Enum {
                         && matches!(tup.extra_fields[0].kind, ExtraKind::Auto)
                     {
                         let first_field = first_field.expect("len == 1");
-                        let Type::Path(ty) = first_field.ty else {
-                            abort!(first_field.span(), "type must be a path");
+                        let span = first_field.span();
+                        let ty = match first_field.ty {
+                            Type::Path(ty) => ty,
+                            Type::Group(ty) => {
+                                let Type::Path(ty) = *ty.elem else {
+                                    abort!(span, "type must be a path");
+                                };
+                                ty
+                            }
+                            _ => abort!(span, "type must be a path"),
                         };
+
                         // Single tuple variant without any defition means
                         // the first field inside is meant to be full node
                         // parser.
