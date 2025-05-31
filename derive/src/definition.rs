@@ -24,6 +24,7 @@ pub enum Definition {
     Enum(Enum),
 }
 
+#[allow(clippy::large_enum_variant)]
 pub enum VariantKind {
     Unit,
     Nested {
